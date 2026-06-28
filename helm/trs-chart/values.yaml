@@ -1,0 +1,68 @@
+namespace: poc
+
+serviceAccount:
+  name: trs-service-account
+
+backend:
+  name: trs-backend
+  image: dpcode72/trs-backend:latest
+  replicas: 1
+  port: 5000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  livenessProbe:
+    path: /api/v1/tasks
+    initialDelaySeconds: 40
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+frontend:
+  name: trs-frontend
+  image: dpcode72/trs-frontend:latest
+  replicas: 1
+  port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  livenessProbe:
+    path: /
+    initialDelaySeconds: 40
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+configmap:
+  FLASK_ENV: "production"
+  PORT: "5000"
+  AWS_REGION: "eu-west-1"
+  SENDER_EMAIL: "sender@example.com"
+  RECIPIENT_EMAILS: "recipient@example.com"
+  REACT_APP_API_URL: "http://trs-backend-service:5000/api/v1"
+  REACT_APP_WEBSOCKET_URL: "ws://trs-backend-service:5000"
+
+externalSecret:
+  secretStoreName: trs-secret-store
+  secretName: trs-secret
+  awsSecretPath: trs/poc/credentials
+  refreshInterval: 1h
+
+ingress:
+  enabled: true
+  className: nginx
+  host: trs.local
+  backend:
+    path: /api
+    port: 5000
+  frontend:
+    path: /
+    port: 80

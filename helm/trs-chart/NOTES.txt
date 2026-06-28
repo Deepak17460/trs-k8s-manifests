@@ -1,0 +1,16 @@
+TRS Application has been deployed!
+
+Access the application:
+  Frontend: http://trs.local
+  Backend API: http://trs.local/api/v1
+
+Port forward for local testing:
+  kubectl port-forward svc/trs-frontend-service 3000:80 -n {{ .Values.namespace }} --address 0.0.0.0
+  kubectl port-forward svc/trs-backend-service 5000:5000 -n {{ .Values.namespace }} --address 0.0.0.0
+
+Check pod status:
+  kubectl get pods -n {{ .Values.namespace }}
+
+Check logs:
+  kubectl logs -l app=trs-backend -n {{ .Values.namespace }}
+  kubectl logs -l app=trs-frontend -n {{ .Values.namespace }}

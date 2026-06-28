@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trs-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  FLASK_ENV: {{ .Values.configmap.FLASK_ENV | quote }}
+  PORT: {{ .Values.configmap.PORT | quote }}
+  AWS_REGION: {{ .Values.configmap.AWS_REGION | quote }}
+  SENDER_EMAIL: {{ .Values.configmap.SENDER_EMAIL | quote }}
+  RECIPIENT_EMAILS: {{ .Values.configmap.RECIPIENT_EMAILS | quote }}
+  REACT_APP_API_URL: {{ .Values.configmap.REACT_APP_API_URL | quote }}
+  REACT_APP_WEBSOCKET_URL: {{ .Values.configmap.REACT_APP_WEBSOCKET_URL | quote }}

@@ -1,0 +1,21 @@
+grafana:
+  adminPassword: admin123
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+
+alertmanager:
+  enabled: true
+
+kubeEtcd:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false

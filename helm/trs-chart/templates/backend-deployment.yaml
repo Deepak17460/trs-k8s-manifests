@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.backend.name }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      containers:
+        - name: {{ .Values.backend.name }}
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          envFrom:
+            - configMapRef:
+                name: trs-configmap
+            - secretRef:
+                name: {{ .Values.externalSecret.secretName }}
+          volumeMounts:
+            - name: backend-logs
+              mountPath: /app/logs
+            - name: backend-data
+              mountPath: /app/data
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.livenessProbe.path }}
+              port: {{ .Values.backend.port }}
+            initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.livenessProbe.failureThreshold }}
+          resources:
+            requests:
+              cpu: {{ .Values.backend.resources.requests.cpu }}
+              memory: {{ .Values.backend.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.backend.resources.limits.cpu }}
+              memory: {{ .Values.backend.resources.limits.memory }}
+      volumes:
+        - name: backend-logs
+          emptyDir: {}
+        - name: backend-data
+          emptyDir: {}

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trs-backend
+  namespace: poc
+  labels:
+    app: trs-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trs-backend
+  template:
+    metadata:
+      labels:
+        app: trs-backend
+    spec:
+      serviceAccountName: trs-service-account
+      containers:
+        - name: trs-backend
+          image: dpcode72/trs-backend:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: trs-configmap
+            - secretRef:
+                name: trs-secret
+          volumeMounts:
+            - name: backend-logs
+              mountPath: /app/logs
+            - name: backend-data
+              mountPath: /app/data
+          livenessProbe:
+            httpGet:
+              path: /api/v1/tasks
+              port: 5000
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: backend-logs
+          emptyDir: {}
+        - name: backend-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trs-backend-service
+  namespace: poc
+spec:
+  selector:
+    app: trs-backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
