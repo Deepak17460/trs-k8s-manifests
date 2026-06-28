@@ -24,8 +24,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: trs-configmap
-            - secretRef:
-                name: trs-secret
           volumeMounts:
             - name: backend-logs
               mountPath: /app/logs
