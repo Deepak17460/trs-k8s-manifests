@@ -6,7 +6,7 @@ metadata:
   labels:
     app: trs-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: trs-backend
